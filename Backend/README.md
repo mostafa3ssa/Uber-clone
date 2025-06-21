@@ -349,3 +349,343 @@ Content-Type: application/json
     }
 }
 ```
+
+# Ride Endpoints Documentation
+
+This document describes the `/ride` endpoints available in the backend of the Uber-clone project.
+
+## Endpoints
+
+### POST /ride/create
+
+- **Description:** Create a new ride request.
+- **Required Data:**
+  - `pickup`: String (minimum 3 characters) - Pickup address
+  - `destination`: String (minimum 3 characters) - Destination address
+  - `vehicleType`: String (one of `auto`, `car`, `moto`) - Type of vehicle
+- **Authentication:** Requires a valid user token.
+- **Responses:**
+  - **201 Created:** Ride created successfully. Returns ride details.
+  - **400 Bad Request:** Validation errors (e.g., missing or invalid fields).
+
+**Request Example:**
+
+```http
+POST /ride/create HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+    "pickup": "123 Main St",
+    "destination": "456 Elm St",
+    "vehicleType": "car"
+}
+```
+
+**Response Example (Success - 201 Created):**
+
+```http
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+    "user": "12345",
+    "pickup": "123 Main St",
+    "destination": "456 Elm St",
+    "fare": 100,
+    "status": "pending",
+    "otp": "123456"
+}
+```
+
+---
+
+### GET /ride/get-fare
+
+- **Description:** Calculate the fare for a ride based on pickup and destination.
+- **Required Query Parameters:**
+  - `pickup`: String (minimum 3 characters) - Pickup address
+  - `destination`: String (minimum 3 characters) - Destination address
+- **Authentication:** Requires a valid user token.
+- **Responses:**
+  - **200 OK:** Returns the calculated fare.
+  - **400 Bad Request:** Validation errors (e.g., missing or invalid fields).
+
+**Request Example:**
+
+```http
+GET /ride/get-fare?pickup=123%20Main%20St&destination=456%20Elm%20St HTTP/1.1
+Authorization: Bearer <token>
+```
+
+**Response Example (Success - 200 OK):**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "auto": 50,
+    "car": 100,
+    "moto": 30
+}
+```
+
+---
+
+### POST /ride/confirm
+
+- **Description:** Confirm a ride request by a captain.
+- **Required Data:**
+  - `rideId`: MongoDB ObjectId - ID of the ride to confirm
+- **Authentication:** Requires a valid captain token.
+- **Responses:**
+  - **200 OK:** Ride confirmed successfully. Returns ride details.
+  - **400 Bad Request:** Validation errors (e.g., missing or invalid fields).
+
+**Request Example:**
+
+```http
+POST /ride/confirm HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+    "rideId": "60d21b4667d0d8992e610c85"
+}
+```
+
+**Response Example (Success - 200 OK):**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "user": {
+        "id": "12345",
+        "fullName": {
+            "firstName": "John",
+            "lastName": "Doe"
+        }
+    },
+    "captain": {
+        "id": "67890",
+        "fullName": {
+            "firstName": "Jane",
+            "lastName": "Doe"
+        }
+    },
+    "pickup": "123 Main St",
+    "destination": "456 Elm St",
+    "fare": 100,
+    "status": "accepted"
+}
+```
+
+---
+
+### GET /ride/start-ride
+
+- **Description:** Start a ride after verifying the OTP.
+- **Required Query Parameters:**
+  - `rideId`: MongoDB ObjectId - ID of the ride to start
+  - `otp`: String (6 characters) - OTP for ride verification
+- **Authentication:** Requires a valid captain token.
+- **Responses:**
+  - **200 OK:** Ride started successfully. Returns ride details.
+  - **400 Bad Request:** Validation errors (e.g., missing or invalid fields).
+
+**Request Example:**
+
+```http
+GET /ride/start-ride?rideId=60d21b4667d0d8992e610c85&otp=123456 HTTP/1.1
+Authorization: Bearer <token>
+```
+
+**Response Example (Success - 200 OK):**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "user": {
+        "id": "12345",
+        "fullName": {
+            "firstName": "John",
+            "lastName": "Doe"
+        }
+    },
+    "captain": {
+        "id": "67890",
+        "fullName": {
+            "firstName": "Jane",
+            "lastName": "Doe"
+        }
+    },
+    "pickup": "123 Main St",
+    "destination": "456 Elm St",
+    "fare": 100,
+    "status": "ongoing"
+}
+```
+
+---
+
+### POST /ride/end-ride
+
+- **Description:** End an ongoing ride.
+- **Required Data:**
+  - `rideId`: MongoDB ObjectId - ID of the ride to end
+- **Authentication:** Requires a valid captain token.
+- **Responses:**
+  - **200 OK:** Ride ended successfully. Returns ride details.
+  - **400 Bad Request:** Validation errors (e.g., missing or invalid fields).
+
+**Request Example:**
+
+```http
+POST /ride/end-ride HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+    "rideId": "60d21b4667d0d8992e610c85"
+}
+```
+
+**Response Example (Success - 200 OK):**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "user": {
+        "id": "12345",
+        "fullName": {
+            "firstName": "John",
+            "lastName": "Doe"
+        }
+    },
+    "captain": {
+        "id": "67890",
+        "fullName": {
+            "firstName": "Jane",
+            "lastName": "Doe"
+        }
+    },
+    "pickup": "123 Main St",
+    "destination": "456 Elm St",
+    "fare": 100,
+    "status": "completed"
+}
+```
+
+---
+
+# Maps Endpoints Documentation
+
+This document describes the `/maps` endpoints available in the backend of the Uber-clone project.
+
+## Endpoints
+
+### GET /maps/get-coordinates
+
+- **Description:** Get the latitude and longitude of a given address.
+- **Required Query Parameters:**
+  - `address`: String (minimum 3 characters) - Address to fetch coordinates for
+- **Authentication:** Requires a valid user token.
+- **Responses:**
+  - **200 OK:** Returns the coordinates of the address.
+  - **400 Bad Request:** Validation errors (e.g., missing or invalid fields).
+
+**Request Example:**
+
+```http
+GET /maps/get-coordinates?address=123%20Main%20St HTTP/1.1
+Authorization: Bearer <token>
+```
+
+**Response Example (Success - 200 OK):**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "ltd": 37.7749,
+    "lng": -122.4194
+}
+```
+
+---
+
+### GET /maps/get-distance-time
+
+- **Description:** Get the distance and estimated time between two locations.
+- **Required Query Parameters:**
+  - `origin`: String (minimum 3 characters) - Starting location
+  - `destination`: String (minimum 3 characters) - Ending location
+- **Authentication:** Requires a valid user token.
+- **Responses:**
+  - **200 OK:** Returns the distance and estimated time.
+  - **400 Bad Request:** Validation errors (e.g., missing or invalid fields).
+
+**Request Example:**
+
+```http
+GET /maps/get-distance-time?origin=123%20Main%20St&destination=456%20Elm%20St HTTP/1.1
+Authorization: Bearer <token>
+```
+
+**Response Example (Success - 200 OK):**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "distance": {
+        "value": 5000,
+        "text": "5 km"
+    },
+    "duration": {
+        "value": 600,
+        "text": "10 mins"
+    }
+}
+```
+
+---
+
+### GET /maps/get-suggestions
+
+- **Description:** Get autocomplete suggestions for an address input.
+- **Required Query Parameters:**
+  - `input`: String (minimum 3 characters) - Input string for suggestions
+- **Authentication:** Requires a valid user token.
+- **Responses:**
+  - **200 OK:** Returns a list of suggestions.
+  - **400 Bad Request:** Validation errors (e.g., missing or invalid fields).
+
+**Request Example:**
+
+```http
+GET /maps/get-suggestions?input=Main HTTP/1.1
+Authorization: Bearer <token>
+```
+
+**Response Example (Success - 200 OK):**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+[
+    "123 Main St, San Francisco, CA",
+    "Main St, Los Angeles, CA",
+    "Main St, New York, NY"
+]
+```
