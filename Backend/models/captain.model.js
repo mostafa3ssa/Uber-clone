@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const captainSchema = new mongoose.Schema({
     fullName: {
@@ -33,7 +35,7 @@ const captainSchema = new mongoose.Schema({
         default: 'inactive'
     },
 
-    vechile: {
+    vehicle: {
         color: {
             type: String,
             required: true,
@@ -49,7 +51,7 @@ const captainSchema = new mongoose.Schema({
             required: true,
             min: [1, 'Capacity must be at least 1'],
         },
-        vechileType: {
+        vehicleType: {
             type: String,
             enum: ['car', 'motorcycle', 'auto'],
             required: true,
@@ -78,7 +80,8 @@ captainSchema.methods.comparePassword = async function (password) {
 }
 
 captainSchema.statics.hashPassword = async function (password) {
-    return await bcrypt.hash(password, process.env.HASH_ROUNDS);
+    const saltRounds = parseInt(process.env.HASH_ROUNDS, 10);
+    return await bcrypt.hash(password, saltRounds);
 }
 const captainModel = mongoose.model('captain', captainSchema);
 

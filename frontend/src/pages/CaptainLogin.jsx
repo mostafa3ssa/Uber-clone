@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react'
 import { Link } from 'react-router-dom'
-import { CaptainDataContext } from '../context/CaptainDataContext'
+import { CaptainDataContext } from '../context/CapatainContext'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
@@ -10,7 +10,7 @@ const CaptainLogin = () => {
     const [ password, setPassword ] = useState('');
     const [ captainData, setCaptainData ] = useState({})
     console.log(CaptainDataContext);
-    const { captain, setCaptain } = useContext(CaptainDataContext)
+    const { setCaptain } = useContext(CaptainDataContext)
     const navigate = useNavigate()
 
     const submitHandler = async (e) => {
@@ -21,16 +21,22 @@ const CaptainLogin = () => {
           password: password
         });
     
-        console.log(captainData);
-        const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/login`, captainData)
+        console.log(`this is captain: ${captainData}`);
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/login`, captainData)
     
-        if (response.status === 200) {
-          const data = response.data
-          setCaptain(data.captain)
-          localStorage.setItem('token', data.token)
-          navigate('/home')
+            if (response.status === 200) {
+                const data = response.data
+                setCaptain(data.captain)
+                console.log(JSON.stringify(data.captain));
+                localStorage.setItem('captain', JSON.stringify(data.captain))
+                localStorage.setItem('token', data.token)
+                navigate('/home')
+            }
+        } catch (error) {
+          console.error('Error occurred:', error.response?.data || error.message);
         }
-        console.log(captain);
+    
     
     
         setEmail('')

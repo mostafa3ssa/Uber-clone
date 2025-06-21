@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { CaptainDataContext } from './CaptainDataContext';
+import { createContext } from 'react';
+export const CaptainDataContext = createContext();
 
 const CaptainContext = ({ children }) => {
     const [ captain, setCaptain ] = useState(null);

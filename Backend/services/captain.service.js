@@ -1,14 +1,11 @@
 const captainModel = require('../models/captain.model');
 
 
-odule.exports.createCaptain = async ({
+module.exports.createCaptain = async ({
     fullName,
     email,
     password,
-    color, 
-    plate,
-    capacity,
-    vechileType
+    vehicle
 }) => {
     if(!fullName.firstName || !email || !password) {
         throw new Error('Please provide all required fields');
@@ -18,12 +15,7 @@ odule.exports.createCaptain = async ({
         fullName,
         email,
         password,
-        vechile: {
-            color, 
-            plate,
-            capacity,
-            vechileType
-        }
+        vehicle
     });
     await captain.save();
     return captain;
