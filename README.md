@@ -47,8 +47,8 @@ A full-stack MERN application that replicates core Uber functionalities, featuri
 1. Clone the repository
 
 ```bash
-git clone https://github.com/mostafa3ssa/uber-clone.git
-cd uber-clon
+git clone https://github.com/mostafa3ssa/Uber-clone.git
+cd Uber-clone
 ```
 
 2. Install backend dependencies
