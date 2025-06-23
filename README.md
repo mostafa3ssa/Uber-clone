@@ -139,7 +139,7 @@ uber-clone/
 │   ├── controllers/     # Request handlers
 │   ├── models/          # Database schemas
 │   ├── routes/          # API routes
-│   ├── services/        # Business logic
+│   ├── services/        # Reusable Functions
 │   ├── middlewares/     # Custom middlewares
 │   └── db/              # Database connection
 └── frontend/
